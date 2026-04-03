@@ -73,7 +73,7 @@ public class Assignment_DirectionAlert : MonoBehaviour
         UpdateUI();
     }
 
-    private Direction GetDirection(Transform enemy)
+    private Direction GetDirection(Transform enemy) // 적이 플레이어의 어느 방향에 있는지 판별
     {
         Vector3 toEnemy = enemy.position - transform.position;  // 플레이어에서 적으로 향하는 벡터
         float angle = Vector3.SignedAngle(transform.forward, toEnemy, Vector3.up);  // 플레이어의 전방과 적 방향 사이의 각도 (Y축 기준)
