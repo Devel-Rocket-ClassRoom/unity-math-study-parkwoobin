@@ -7,6 +7,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System;
+
 
 public class Assignment_DirectionAlert : MonoBehaviour
 {
@@ -32,6 +34,11 @@ public class Assignment_DirectionAlert : MonoBehaviour
     [Tooltip("적 감지 반경")]
     [Range(1f, 30f)]
     [SerializeField] private float alertRange = 15f;
+
+    [Header("=== 전 후방 설정 ===")]
+    [Tooltip("전 감지 변경")]
+    [Range(0.05f, 5f)]
+    [SerializeField] private float sideThreshold = 0.3f;
 
     [Header("=== UI 연결 ===")]
     [Tooltip("정보 표시용 TMP_Text (Canvas 하위에 배치)")]
@@ -76,16 +83,22 @@ public class Assignment_DirectionAlert : MonoBehaviour
     private Direction GetDirection(Transform enemy) // 적이 플레이어의 어느 방향에 있는지 판별
     {
         Vector3 toEnemy = enemy.position - transform.position;  // 플레이어에서 적으로 향하는 벡터
-        float angle = Vector3.SignedAngle(transform.forward, toEnemy, Vector3.up);  // 플레이어의 전방과 적 방향 사이의 각도 (Y축 기준)
+        toEnemy.y = 0f; // 수직 방향 무시 (XZ 평면에서만 판단)
 
-        if (angle >= -45f && angle <= 45f)  // angle이 -45도에서 45도 사이면 전방
-            return Direction.Front;
-        else if (angle > 45f && angle < 135f)   // angle이 45도에서 135도 사이면 우측
-            return Direction.Right;
-        else if (angle < -45f && angle > -135f) // angle이 -45도에서 -135도 사이면 좌측
-            return Direction.Left;
-        else    // 그 외는 후방 (angle이 135도에서 -135도 사이)
-            return Direction.Back;
+        if (toEnemy == Vector3.zero)
+        {
+            return Direction.None; // 같은 위치에 있으면 방향 없음
+        }
+
+        Vector3 cross = Vector3.Cross(transform.forward, toEnemy.normalized);  // 외적
+        float dot = Vector3.Dot(transform.forward, toEnemy.normalized);    // 내적
+
+        if (MathF.Abs(cross.y) > sideThreshold)
+        {
+            return cross.y > 0f ? Direction.Left : Direction.Right; // 외적의 Y값으로 좌우 판단
+        }
+
+        return dot > 0f ? Direction.Front : Direction.Back; // 내적의 부호로 전후 판단
     }
 
     private void OnDrawGizmos()
