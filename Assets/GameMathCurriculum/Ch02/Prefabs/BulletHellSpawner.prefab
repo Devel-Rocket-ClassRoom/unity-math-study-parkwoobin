@@ -157,7 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87784a66b090c814fabc82361e9112b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Assignment_BulletHell
-  bulletPrefab: {fileID: 0}
+  bulletPrefab: {fileID: 5460869111871097844, guid: 4079fb5d6db8a9946808bdeae599fb5c, type: 3}
   bulletCount: 16
   bulletSpeed: 10
   fireInterval: 0.5
