@@ -72,15 +72,15 @@ public class Assignment_LissajousCurve : MonoBehaviour
         //   x(t) = Ax × sin(2π × fx × t + φx)
         float ax = amplitudeX;
         float fx = frequencyX;
-        float phiX = phaseX * Mathf.Deg2Rad;
-        // Ax = 진폭 (amplitudeX, amplitudeZ)
+        float phiX = phaseX * Mathf.Deg2Rad;    // Ax = 진폭 (amplitudeX, amplitudeZ)
+
         float x = ax * Mathf.Sin(2f * Mathf.PI * fx * time + phiX);
 
         //   z(t) = Az × sin(2π × fz × t + φz)
         float az = amplitudeZ;
         float fz = frequencyZ;
-        float phiZ = phaseZ * Mathf.Deg2Rad;
-        // Az = 진폭 (amplitudeX, amplitudeZ)
+        float phiZ = phaseZ * Mathf.Deg2Rad;    // Az = 진폭 (amplitudeX, amplitudeZ)
+
         float z = az * Mathf.Sin(2f * Mathf.PI * fz * time + phiZ);
 
         // fx, fz = 주파수 (frequencyX, frequencyZ)
