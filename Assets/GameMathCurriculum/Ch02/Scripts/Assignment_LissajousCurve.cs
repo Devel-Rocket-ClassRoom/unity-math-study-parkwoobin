@@ -7,29 +7,37 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using Unity.Collections;
 
 public class Assignment_LissajousCurve : MonoBehaviour
 {
     [Header("=== 리사주 곡선 파라미터 ===")]
-    [Tooltip("X축 진폭")] [Range(0.5f, 5f)]
+    [Tooltip("X축 진폭")]
+    [Range(0.5f, 5f)]
     [SerializeField] private float amplitudeX = 2f;
 
-    [Tooltip("Z축 진폭")] [Range(0.5f, 5f)]
+    [Tooltip("Z축 진폭")]
+    [Range(0.5f, 5f)]
     [SerializeField] private float amplitudeZ = 2f;
 
-    [Tooltip("X축 주파수")] [Range(0.1f, 3f)]
+    [Tooltip("X축 주파수")]
+    [Range(0.1f, 3f)]
     [SerializeField] private float frequencyX = 1f;
 
-    [Tooltip("Z축 주파수")] [Range(0.1f, 3f)]
+    [Tooltip("Z축 주파수")]
+    [Range(0.1f, 3f)]
     [SerializeField] private float frequencyZ = 2f;
 
-    [Tooltip("X축 위상 (도, 0~360)")] [Range(0f, 360f)]
+    [Tooltip("X축 위상 (도, 0~360)")]
+    [Range(0f, 360f)]
     [SerializeField] private float phaseX = 0f;
 
-    [Tooltip("Z축 위상 (도, 0~360)")] [Range(0f, 360f)]
+    [Tooltip("Z축 위상 (도, 0~360)")]
+    [Range(0f, 360f)]
     [SerializeField] private float phaseZ = 0f;
 
-    [Tooltip("자취 길이 (이전 위치 개수)")] [Range(10, 200)]
+    [Tooltip("자취 길이 (이전 위치 개수)")]
+    [Range(10, 200)]
     [SerializeField] private int trailLength = 50;
 
     [Header("=== 디버그 정보 (읽기 전용) ===")]
@@ -62,16 +70,24 @@ public class Assignment_LissajousCurve : MonoBehaviour
     {
         // 리사주 곡선 (Lissajous Curve) 공식:
         //   x(t) = Ax × sin(2π × fx × t + φx)
+        float ax = amplitudeX;
+        float fx = frequencyX;
+        float phiX = phaseX * Mathf.Deg2Rad;
+        // Ax = 진폭 (amplitudeX, amplitudeZ)
+        float x = ax * Mathf.Sin(2f * Mathf.PI * fx * time + phiX);
+
         //   z(t) = Az × sin(2π × fz × t + φz)
-        //
-        // Ax, Az = 진폭 (amplitudeX, amplitudeZ)
+        float az = amplitudeZ;
+        float fz = frequencyZ;
+        float phiZ = phaseZ * Mathf.Deg2Rad;
+        // Az = 진폭 (amplitudeX, amplitudeZ)
+        float z = az * Mathf.Sin(2f * Mathf.PI * fz * time + phiZ);
+
         // fx, fz = 주파수 (frequencyX, frequencyZ)
         // φx, φz = 위상 (phaseX, phaseZ) — 도(degree) → 라디안 변환 필요
-        //
-        // initialPosition을 기준으로 X, Z 오프셋을 더해 최종 위치를 반환하세요.
 
-        // TODO: 위 공식을 구현하세요
-        return initialPosition;
+        // initialPosition을 기준으로 X, Z 오프셋을 더해 최종 위치를 반환
+        return initialPosition + new Vector3(x, 0f, z);
     }
 
     private void UpdateDebugUI()
