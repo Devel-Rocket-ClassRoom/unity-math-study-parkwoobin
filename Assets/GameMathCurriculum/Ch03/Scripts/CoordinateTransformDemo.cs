@@ -36,7 +36,11 @@ public class CoordinateTransformDemo : MonoBehaviour
     {
         if (childObject == null || worldTarget == null) return;
 
-        // TODO
+        childLocalPos = childObject.localPosition; // 로컬 포지션
+        childWorldPos = transform.TransformPoint(childLocalPos); // 로컬→월드 변환
+
+        targetWorldPos = worldTarget.position; // 월드 포지션
+        targetLocalPos = transform.InverseTransformPoint(targetWorldPos); // 월드→로컬 역변환
 
         UpdateUI();
     }

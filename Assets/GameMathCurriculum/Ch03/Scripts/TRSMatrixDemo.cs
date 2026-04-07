@@ -46,6 +46,12 @@ public class TRSMatrixDemo : MonoBehaviour
     private void Update()
     {
         // TODO
+        // 1. TRS 행렬 계산
+        Quaternion rotQuat = Quaternion.Euler(0f, rotationAngle, 0f);
+        currentTRS = Matrix4x4.TRS(translation, rotQuat, scale);
+
+        // 2. 원점(0,0,0)을 TRS 행렬로 변환하여 최종 위치 계산
+        transformedPoint = currentTRS.MultiplyPoint3x4(Vector3.zero);
 
         UpdateUI();
     }
@@ -63,7 +69,17 @@ public class TRSMatrixDemo : MonoBehaviour
         // 2~3. 중간 단계
         if (showSteps)
         {
-            // TODO
+            // R T S
+            var r = Matrix4x4.Rotate(rotQuat);
+            var t = Matrix4x4.Translate(translation);
+            var s = Matrix4x4.Scale(scale);
+
+            Matrix4x4 rts = r * t * s;
+            Color wrongColor = new Color(0.5f, 0.5f, 0.5f);
+            DrawShape(originPos, rts, wrongColor, "잘못된 순서 (RTS)");
+
+            Vector3 wrongOrigin = originPos + rts.MultiplyPoint3x4(Vector3.zero);
+            DrawDashedLine(originPos, wrongOrigin, new Color(1f, 1f, 1f, 0.3f));
         }
 
         // 3. 최종 T × R × S 결과 (초록)

@@ -50,6 +50,21 @@ public class Assignment_PlanetOrbit : MonoBehaviour
     private void Update()
     {
         // TODO
+        // 1. 행성 구현 
+
+        //Matrix4x4.TRS와 MultiplyPoint3x4를 이용하여 행성과 위성의 원형 궤도를 구현한다.
+        Matrix4x4 planetMatrix = Matrix4x4.TRS(orbitCenter, Quaternion.Euler(0f, Time.time * planetOrbitSpeed, 0f), Vector3.one);
+        planetWorldPos = planetMatrix.MultiplyPoint3x4(new Vector3(planetOrbitRadius, 0f, 0f)); // 행성 위치 계산
+
+
+        transform.position = planetWorldPos; // 행성 위치 업데이트
+
+        // 행성(1개)은 설정한 중심점 주위를 공전하고, 위성(1개)은 행성 주위를 공전한다.
+        Matrix4x4 satteliteMatrix = Matrix4x4.TRS(planetWorldPos, Quaternion.Euler(0f, Time.time * satelliteOrbitSpeed, 0f), Vector3.one);
+        satelliteWorldPos = satteliteMatrix.MultiplyPoint3x4(new Vector3(satelliteOrbitRadius, 0f, 0f));    // 위성 위치 계산   
+        satelliteLocalPos = satelliteWorldPos - planetWorldPos; // 위성 로컬 오프셋 계산해서 아래에 텍스트로 출력하기 위해서
+
+        satellite.position = satelliteWorldPos; // 위성 위치 업데이트
 
         UpdateUI();
     }

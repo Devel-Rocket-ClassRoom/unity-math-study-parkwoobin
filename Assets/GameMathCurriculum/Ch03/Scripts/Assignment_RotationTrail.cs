@@ -44,8 +44,19 @@ public class Assignment_RotationTrail : MonoBehaviour
 
     private void Update()
     {
-        // TODO
-        
+        if (autoRotate)
+        {
+            rotationAngle = (rotationSpeed * Time.time) % 360f;
+        }
+
+        // 중심(transform.position)을 기준으로 Y축 회전
+        Matrix4x4 gizmosMatrix = Matrix4x4.TRS(transform.position, Quaternion.Euler(0f, 0f, rotationAngle), Vector3.one);
+        lastTipPos = gizmosMatrix.MultiplyPoint3x4(new Vector3(armLength, 0f, 0f));
+
+        trailPositions.Add(lastTipPos);
+        while (trailPositions.Count > trailLength)
+            trailPositions.RemoveAt(0);
+
         UpdateUI();
     }
 
