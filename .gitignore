@@ -157,3 +157,9 @@ $RECYCLE.BIN/
 
 # macOS
 .DS_Store
+
+# ==========================================================================
+# Large Font Files (TextMesh Pro SDF assets exceed 100MB GitHub limit)
+# ==========================================================================
+Assets/Fonts/*SDF.asset
+Assets/Fonts/*SDF.asset.meta
