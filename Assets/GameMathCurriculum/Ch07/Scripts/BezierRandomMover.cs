@@ -14,12 +14,12 @@ public class BezierRandomMover : MonoBehaviour
 
     [Header("=== 발사 설정 ===")]
     [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private float shootInterval = 0.5f;
+    [SerializeField] private float Interval = 0.5f;
     [Range(1f, 20f)][SerializeField] private float duration = 6f;
 
     private Vector3 startPoint;
     private Vector3 endPoint;
-    private float shootTimer;
+    private float timer;
     private Random mathRandom;
 
     private void Awake()
@@ -39,40 +39,38 @@ public class BezierRandomMover : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            shootTimer += Time.deltaTime;
-            if (shootTimer > shootInterval)
+            timer += Time.deltaTime;   // SPACE 키가 눌려있는 동안 timer 증가
+            if (timer > Interval)
             {
-                ShootBullet();
-                shootTimer = 0f;
+                // Bullet 생성
+                GameObject bulletObj = Instantiate(bulletPrefab, startPoint, Quaternion.identity);  // startPoint에서 bulletPrefab 인스턴스화해서 생성
+
+                // BezierBullet 컴포넌트 처리
+                BezierBullet bezierBullet = bulletObj.GetComponent<BezierBullet>(); // 생성된 bulletObj에서 BezierBullet 컴포넌트 가져오기
+
+                // null 체크 - 컴포넌트가 없으면 추가
+                if (bezierBullet == null)
+                {
+                    bezierBullet = bulletObj.AddComponent<BezierBullet>();
+                }
+
+                // 랜덤 제어점 생성
+                Vector3 control1 = GenerateRandomControlPoint();
+                Vector3 control2 = GenerateRandomControlPoint();
+
+                // 랜덤 이동 시간으로 총알마다 속도가 다름 (30%~100% 범위)
+                float moveDuration = mathRandom.NextFloat(duration * 0.3f, duration);
+
+                // Bullet 초기화
+                bezierBullet.Initialize(startPoint, control1, control2, endPoint, moveDuration);
+                timer = 0f;
             }
         }
     }
 
-    private void ShootBullet()
-    {
-        // Bullet 생성
-        GameObject bulletObj = Instantiate(bulletPrefab, startPoint, Quaternion.identity);
-        bulletObj.name = "BezierBullet";
-
-        // BezierBullet 컴포넌트 처리
-        BezierBullet bezierBullet = bulletObj.GetComponent<BezierBullet>();
-        if (bezierBullet == null)
-            bezierBullet = bulletObj.AddComponent<BezierBullet>();
-
-        // 랜덤 제어점 생성
-        Vector3 control1 = GenerateRandomControlPoint();
-        Vector3 control2 = GenerateRandomControlPoint();
-
-        // 랜덤 이동 시간
-        float moveDuration = mathRandom.NextFloat(duration * 0.3f, duration);
-
-        // Bullet 초기화
-        bezierBullet.Initialize(startPoint, control1, control2, endPoint, moveDuration);
-    }
-
     private Vector3 GenerateRandomControlPoint()    // startPoint과 endPoint의 중간 지점을 기준으로 랜덤한 오프셋을 더하여 제어점 생성
     {
-        Vector3 midPoint = (startPoint + endPoint) * 0.5f;
+        Vector3 midPoint = (startPoint + endPoint) * 0.5f;  // midPoint를 기준으로 -3 ~ +3 범위의 랜덤한 오프셋 생성
         Vector3 offset = new Vector3(
             mathRandom.NextFloat(-3f, 3f),
             mathRandom.NextFloat(-3f, 3f),
@@ -82,7 +80,7 @@ public class BezierRandomMover : MonoBehaviour
     }
     private void OnDrawGizmosSelected() // Scene 뷰에서 Knot 위치를 시각적으로 표시
     {
-        Spline spline = splineContainer.Splines[0];
+        Spline spline = splineContainer.Splines[0]; // Spline의 Transform 가져오기
 
         Transform splineTransform = splineContainer.transform;
 
@@ -108,6 +106,7 @@ public class BezierBullet : MonoBehaviour
     private float duration;
     private float t;
 
+    // 베지어 4점 설정 및 이동 시간 초기화
     public void Initialize(Vector3 start, Vector3 control1, Vector3 control2, Vector3 end, float moveDuration)
     {
         p0 = start;
@@ -120,15 +119,16 @@ public class BezierBullet : MonoBehaviour
 
     private void Update()
     {
+        // 0 -> 1로 t 증가시키면서 베지어 곡선을 따라 이동
         t += Time.deltaTime / duration;
 
-        if (t > 1f)
+        if (t > 1f) // t가 1을 초과하면 이동 완료로 간주하고 오브젝트 제거
         {
             Destroy(gameObject);
             return;
         }
 
-        transform.position = EvaluateCubicBezier(t);
+        transform.position = EvaluateCubicBezier(t);    // 위치 업데이트
     }
 
     private Vector3 EvaluateCubicBezier(float t)
