@@ -13,9 +13,11 @@ public class BezierRandomMover : MonoBehaviour
     [SerializeField] private SplineContainer splineContainer;
 
     [Header("=== 발사 설정 ===")]
-    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] public BezierBullet bulletPrefab;
     [SerializeField] private float Interval = 0.5f;
     [Range(1f, 20f)][SerializeField] private float duration = 6f;
+
+
 
     private Vector3 startPoint;
     private Vector3 endPoint;
@@ -43,16 +45,18 @@ public class BezierRandomMover : MonoBehaviour
             if (timer > Interval)
             {
                 // Bullet 생성
-                GameObject bulletObj = Instantiate(bulletPrefab, startPoint, Quaternion.identity);  // startPoint에서 bulletPrefab 인스턴스화해서 생성
+                // GameObject bulletObj = Instantiate(bulletPrefab, startPoint, Quaternion.identity);  // startPoint에서 bulletPrefab 인스턴스화해서 생성
+                BezierBullet bullet = Instantiate(bulletPrefab);
+
 
                 // BezierBullet 컴포넌트 처리
-                BezierBullet bezierBullet = bulletObj.GetComponent<BezierBullet>(); // 생성된 bulletObj에서 BezierBullet 컴포넌트 가져오기
+                // BezierBullet bezierBullet = bullet.GetComponent<BezierBullet>(); // 생성된 bulletObj에서 BezierBullet 컴포넌트 가져오기
 
                 // null 체크 - 컴포넌트가 없으면 추가
-                if (bezierBullet == null)
-                {
-                    bezierBullet = bulletObj.AddComponent<BezierBullet>();
-                }
+                // if (bezierBullet == null)
+                // {
+                //     bezierBullet = bullet.AddComponent<BezierBullet>();
+                // }
 
                 // 랜덤 제어점 생성
                 Vector3 control1 = GenerateRandomControlPoint();
@@ -62,7 +66,7 @@ public class BezierRandomMover : MonoBehaviour
                 float moveDuration = mathRandom.NextFloat(duration * 0.3f, duration);
 
                 // Bullet 초기화
-                bezierBullet.Initialize(startPoint, control1, control2, endPoint, moveDuration);
+                bullet.Initialize(startPoint, control1, control2, endPoint, moveDuration);
                 timer = 0f;
             }
         }
@@ -78,6 +82,7 @@ public class BezierRandomMover : MonoBehaviour
         );
         return midPoint + offset;
     }
+
     private void OnDrawGizmosSelected() // Scene 뷰에서 Knot 위치를 시각적으로 표시
     {
         Spline spline = splineContainer.Splines[0]; // Spline의 Transform 가져오기
@@ -93,53 +98,5 @@ public class BezierRandomMover : MonoBehaviour
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(endWorldPos, 0.3f);
-    }
-}
-
-
-/// <summary>
-/// 베지어 곡선을 따라 이동하는 bullet
-/// </summary>
-public class BezierBullet : MonoBehaviour
-{
-    private Vector3 p0, p1, p2, p3;
-    private float duration;
-    private float t;
-
-    // 베지어 4점 설정 및 이동 시간 초기화
-    public void Initialize(Vector3 start, Vector3 control1, Vector3 control2, Vector3 end, float moveDuration)
-    {
-        p0 = start;
-        p1 = control1;
-        p2 = control2;
-        p3 = end;
-        duration = moveDuration;
-        t = 0f;
-    }
-
-    private void Update()
-    {
-        // 0 -> 1로 t 증가시키면서 베지어 곡선을 따라 이동
-        t += Time.deltaTime / duration;
-
-        if (t > 1f) // t가 1을 초과하면 이동 완료로 간주하고 오브젝트 제거
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        transform.position = EvaluateCubicBezier(t);    // 위치 업데이트
-    }
-
-    private Vector3 EvaluateCubicBezier(float t)
-    {
-        Vector3 a = Vector3.Lerp(p0, p1, t);
-        Vector3 b = Vector3.Lerp(p1, p2, t);
-        Vector3 c = Vector3.Lerp(p2, p3, t);
-
-        Vector3 d = Vector3.Lerp(a, b, t);
-        Vector3 e = Vector3.Lerp(b, c, t);
-
-        return Vector3.Lerp(d, e, t);
     }
 }

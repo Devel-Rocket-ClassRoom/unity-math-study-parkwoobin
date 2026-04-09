@@ -1093,8 +1093,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BezierRandomMover
   splineContainer: {fileID: 1446142526}
+  bulletPrefab: {fileID: 3246079268579352932, guid: c4de2189d14e28f479aa62c4e46eb683, type: 3}
+  Interval: 0.5
   duration: 6
-  bulletPrefab: {fileID: 2133386451239824800, guid: c4de2189d14e28f479aa62c4e46eb683, type: 3}
 --- !u!114 &1446142526
 MonoBehaviour:
   m_ObjectHideFlags: 0
