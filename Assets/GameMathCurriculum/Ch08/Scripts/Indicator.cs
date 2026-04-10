@@ -38,6 +38,7 @@ public class Indicator : MonoBehaviour
             {
                 // 화면 안에 있으면 인디케이터 숨김
                 GetComponent<CubeColor>().ImageColor[i].enabled = false;
+
             }
             else
             {
@@ -48,7 +49,7 @@ public class Indicator : MonoBehaviour
                 {
                     // 카메라 뒤의 오브젝트는 화면 중심 기준 반대쪽으로 표시
                     screenPos.x = Screen.width - screenPos.x;
-                    screenPos.y = 0;
+                    screenPos.y = Screen.height - screenPos.y;
                 }
 
                 // 화면 가장자리에 인디케이터 위치 설정
@@ -75,8 +76,17 @@ public class Indicator : MonoBehaviour
 
                 Debug.Log($"{indicatorImage.name}  x: {screenPos.x}, y: {screenPos.y}, z: {screenPos.z}");
 
-                indicatorImage.rectTransform.position = new Vector3(screenPos.x, screenPos.y, 0);
+
+                Vector3 local = mainCamera.transform.InverseTransformPoint(cubeColor.CubeRenderers[i].transform.position);
+                Vector2 dir = new Vector2(local.x, local.y).normalized;
+                Vector2 center = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+                float scale = Mathf.Min(center.x / Mathf.Abs(dir.x), center.y / Mathf.Abs(dir.y));
+                Vector2 pos = center + dir * scale;
+                indicatorImage.rectTransform.position = new Vector3(pos.x, pos.y, 0);
             }
+
+
+
         }
     }
 }

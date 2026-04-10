@@ -18,7 +18,7 @@ public class OffScreenIndicator : MonoBehaviour
 
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         float rotation = Input.GetAxis("Rotation"); //Q/E 키로 회전 입력 받기
         if (rotation != 0f)
