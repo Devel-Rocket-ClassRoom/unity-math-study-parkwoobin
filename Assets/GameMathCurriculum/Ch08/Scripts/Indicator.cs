@@ -48,7 +48,7 @@ public class Indicator : MonoBehaviour
                 {
                     // 카메라 뒤의 오브젝트는 화면 중심 기준 반대쪽으로 표시
                     screenPos.x = Screen.width - screenPos.x;
-                    screenPos.y = Screen.height - screenPos.y;
+                    screenPos.y = 0;
                 }
 
                 // 화면 가장자리에 인디케이터 위치 설정
